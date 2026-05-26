@@ -370,7 +370,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 // CONFIG
 // ============================================================
 var SHEET_ID='1GJjgM-5myXMoWSLmB6i6SggyIcXozBTJEaraFBR46rw';
-var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbzJ7j2kAeS55rs2b_vzzsYCFWR3GHi5rIO2Lxls8AQFCb1OOgKWLl9eBw-YhkyJN7BW/exec';
+var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyoad1mx7Xxo3zoLwaTBVChLlbzrVKjOU-RZehyKSDTlhUoER1vQR4XiQ9O8uZBOc3e/exec';
 var PIN_CODE='1234'; // ← CHANGEZ CE CODE PIN
 
 // ============================================================
@@ -622,8 +622,13 @@ function ajouterArticle(){
   showLoad('Ajout dans l\'inventaire...');
 
   var rowData=[code,fourn,desig,mini,stock,0,0,stock,'',prix,ean];
-  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addArticle',data:rowData,categorie:cat})})
-    .then(function(){artOk(code,desig,stock,ean);}).catch(function(){artOk(code,desig,stock,ean);});
+  var artParams = {
+    action: 'addArticle',
+    code: code, fourn: fourn, desig: desig,
+    mini: mini, stock: stock, prix: prix,
+    ean: ean, categorie: cat
+  };
+  envoyerDonnees(artParams, function(){ artOk(code,desig,stock,ean); });
 
   // Ajouter à inventaire local
   inventaire.push({code:code,fourn:fourn,desig:desig,mini:mini,stock:stock,ean:ean});
