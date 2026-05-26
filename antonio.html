@@ -330,8 +330,13 @@ function enregistrer(){
   var now=new Date();
   var dateStr=now.toLocaleDateString('fr-FR');
   var rowData=[dateStr,curArt.code,curArt.desig,'',qty,chan,'Sortie chantier',PERSONNE];
-  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addMouvement',data:rowData})})
-    .then(function(){ok(qty,chan,now);}).catch(function(){ok(qty,chan,now);});
+  var params = {
+    action: 'addMouvement',
+    date: rowData[0], code: rowData[1], desig: rowData[2],
+    entree: rowData[3], sortie: rowData[4], chantier: rowData[5],
+    type: rowData[6], personne: rowData[7]
+  };
+  envoyerDonnees(params, function(){ ok(qty,chan,now); });
   historique.unshift({date:dateStr,heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),code:curArt.code,desig:curArt.desig,qty:qty,chantier:chan});
   historique=historique.slice(0,50);
   localStorage.setItem(HIST_KEY,JSON.stringify(historique));
@@ -360,6 +365,24 @@ function goScan(){goScreen('s-scan');startCam();}
 function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},3500);}
 function showLoad(t){document.getElementById('loadTxt').textContent=t;document.getElementById('loadOv').classList.add('on');}
 function hideLoad(){document.getElementById('loadOv').classList.remove('on');}
+
+function envoyerDonnees(params, callback) {
+  var url = APPS_SCRIPT_URL + '?' + Object.keys(params).map(function(k){
+    return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
+  }).join('&');
+  
+  var img = new Image();
+  img.onload = img.onerror = function() {
+    if (callback) callback();
+  };
+  img.src = url;
+  
+  // Fallback avec fetch no-cors
+  fetch(url, { method: 'GET', mode: 'no-cors' })
+    .then(function(){ if(callback) callback(); })
+    .catch(function(){ if(callback) callback(); });
+}
+
 charger();updHistCount();
 </script>
 </body>
