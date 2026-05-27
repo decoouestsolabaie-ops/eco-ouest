@@ -14,27 +14,50 @@
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:20px;}
 body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 10%,rgba(56,142,60,0.12) 0%,transparent 60%);pointer-events:none;z-index:0;}
+
+/* OFFLINE BANNER */
+.offline-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#E65100;color:white;text-align:center;padding:8px;font-size:12px;font-weight:600;}
+.offline-banner.show{display:block;}
+.sync-banner{display:none;position:fixed;top:0;left:0;right:0;z-index:999;background:#1565C0;color:white;text-align:center;padding:8px;font-size:12px;font-weight:600;}
+.sync-banner.show{display:block;}
+
 .header{background:rgba(7,14,26,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 20px;position:sticky;top:0;z-index:100;}
 .header-top{display:flex;align-items:center;justify-content:space-between;}
 .logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#E8F4FD;}
 .logo span{color:var(--accent);}
-.user-badge{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:700;color:var(--accent);display:flex;align-items:center;gap:6px;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.user-badge{background:rgba(0,0,0,0.3);border:1px solid var(--border);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;color:var(--accent);}
+.notif-btn{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px;font-size:16px;cursor:pointer;position:relative;}
+.notif-badge{position:absolute;top:-4px;right:-4px;background:#D32F2F;color:white;font-size:9px;font-weight:700;width:14px;height:14px;border-radius:50%;display:none;align-items:center;justify-content:center;}
 .sync-dot{width:7px;height:7px;border-radius:50%;background:#FFA500;display:inline-block;margin-right:4px;}
 .header-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.pending-indicator{display:none;font-size:11px;color:#FFCC80;margin-top:2px;}
+.pending-indicator.show{display:block;}
+
 .screen{display:none;padding:20px;position:relative;z-index:1;}
 .screen.active{display:block;}
-.home-hero{text-align:center;padding:20px 0 28px;}
-.home-avatar{font-size:72px;margin-bottom:8px;}
-.home-name{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px;color:var(--accent);}
+
+.home-hero{text-align:center;padding:16px 0 24px;}
+.home-avatar{font-size:64px;margin-bottom:8px;}
+.home-name{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;margin-bottom:4px;color:var(--accent);}
 .home-sub{font-size:13px;color:var(--muted);}
+
 .big-btn{width:100%;border:none;border-radius:16px;padding:20px;cursor:pointer;display:flex;align-items:center;gap:16px;margin-bottom:12px;transition:transform 0.15s;font-family:'DM Sans',sans-serif;}
 .big-btn:active{transform:scale(0.97);}
-.big-btn-icon{font-size:34px;flex-shrink:0;}
+.big-btn-icon{font-size:32px;flex-shrink:0;}
 .big-btn-text h3{font-size:16px;font-weight:700;margin-bottom:2px;}
 .big-btn-text p{font-size:12px;opacity:0.8;}
 .btn-scan{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:white;box-shadow:0 8px 24px rgba(56,142,60,0.4);}
+.btn-voice{background:linear-gradient(135deg,#6A1B9A,#8E24AA);color:white;box-shadow:0 8px 24px rgba(106,27,154,0.4);}
 .btn-manual{background:var(--surface);color:#E8F4FD;border:1px solid var(--border);}
 .btn-hist{background:var(--surface);color:#E8F4FD;border:1px solid var(--border);}
+
+/* PUSH NOTIF */
+.notif-box{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.notif-box p{font-size:13px;color:var(--muted);flex:1;}
+.notif-btn-small{background:var(--accent-dark);color:white;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;}
+
+/* SCANNER */
 .scanner-container{position:relative;width:100%;border-radius:16px;overflow:hidden;background:#000;margin-bottom:16px;}
 #video{width:100%;display:block;max-height:65vw;object-fit:cover;}
 #canvas{display:none;}
@@ -51,13 +74,35 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .scan-status.active{color:var(--accent);}
 .scan-status.success{color:#A5D6A7;}
 .scan-status.error{color:#EF9A9A;}
+.scan-status.voice{color:#CE93D8;}
+
+/* VOICE */
+.voice-screen{text-align:center;padding:30px 20px;}
+.voice-icon{font-size:80px;margin-bottom:16px;animation:voicePulse 1s ease-in-out infinite;}
+@keyframes voicePulse{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+.voice-status{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;color:var(--accent);margin-bottom:8px;}
+.voice-transcript{font-size:14px;color:var(--muted);min-height:40px;margin-bottom:20px;padding:12px;background:var(--surface);border-radius:10px;border:1px solid var(--border);}
+.voice-results{margin-top:16px;}
+.voice-result-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;gap:12px;}
+.voice-result-item:active{background:var(--surface2);}
+.voice-result-name{font-weight:600;font-size:14px;flex:1;}
+.voice-result-stock{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--accent);}
+
 .manual-wrap{margin-bottom:14px;}
 .manual-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:6px;display:block;}
 .manual-row{display:flex;gap:8px;}
 .manual-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#E8F4FD;font-family:'DM Mono',monospace;font-size:15px;outline:none;}
 .manual-input:focus{border-color:var(--accent);}
 .manual-btn{background:var(--accent-dark);color:white;border:none;border-radius:10px;padding:12px 18px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.article-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:16px;}
+
+/* PHOTO ARTICLE */
+.photo-wrap{position:relative;margin-bottom:14px;}
+.article-photo{width:100%;max-height:120px;object-fit:cover;border-radius:12px;display:none;}
+.article-photo.show{display:block;}
+.photo-placeholder{background:var(--surface2);border:2px dashed var(--border);border-radius:12px;padding:20px;text-align:center;color:var(--muted);font-size:13px;cursor:pointer;margin-bottom:8px;}
+.photo-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;margin-bottom:14px;}
+
+.article-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:16px;}
 .article-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;text-transform:uppercase;margin-bottom:8px;}
 .badge-found{background:rgba(46,125,50,0.2);color:#A5D6A7;border:1px solid rgba(46,125,50,0.3);}
 .badge-warn{background:rgba(230,81,0,0.2);color:#FFCC80;border:1px solid rgba(230,81,0,0.3);}
@@ -71,21 +116,27 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .chip-green{background:rgba(46,125,50,0.2);color:#A5D6A7;}
 .chip-orange{background:rgba(230,81,0,0.2);color:#FFCC80;}
 .chip-red{background:rgba(198,40,40,0.2);color:#EF9A9A;}
+
 .sortie-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--accent);margin-bottom:14px;}
 .form-label{font-size:12px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px;margin-top:14px;display:block;}
+
+/* CHANTIER PICKER */
+.chantier-tabs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;padding-bottom:4px;}
+.chantier-tab{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;flex-shrink:0;}
+.chantier-tab.active{background:var(--accent-dark);color:white;border-color:var(--accent);}
+.chantier-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#E8F4FD;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;margin-bottom:8px;}
+.chantier-input:focus{border-color:var(--accent);}
+
 .qty-row{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
 .qty-btn{width:56px;height:56px;border:none;border-radius:12px;font-size:28px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--surface2);color:var(--accent);}
 .qty-input{flex:1;background:var(--surface2);border:2px solid var(--accent);border-radius:12px;padding:12px;color:#E8F4FD;font-family:'Syne',sans-serif;font-size:30px;font-weight:800;text-align:center;outline:none;}
-.chantier-input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:#E8F4FD;font-family:'DM Sans',sans-serif;font-size:15px;outline:none;margin-bottom:8px;}
-.chantier-input:focus{border-color:var(--accent);}
-.chips-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
-.chip{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--muted);cursor:pointer;}
-.chip:active{background:var(--accent-dark);color:white;}
+
 .submit-btn{width:100%;border:none;border-radius:14px;padding:18px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
 .submit-btn:active{transform:scale(0.98);}
 .s-ok{background:linear-gradient(135deg,var(--accent-dark),var(--accent));color:white;box-shadow:0 6px 20px rgba(56,142,60,0.4);}
 .s-dis{background:var(--surface2);color:var(--muted);cursor:not-allowed;}
 .back-btn{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:14px;cursor:pointer;margin-bottom:16px;background:none;border:none;font-family:'DM Sans',sans-serif;padding:0;}
+
 .success-wrap{text-align:center;padding:36px 20px;}
 .success-icon{font-size:72px;margin-bottom:14px;animation:pop 0.4s ease;}
 @keyframes pop{0%{transform:scale(0.3);}70%{transform:scale(1.2);}100%{transform:scale(1);}}
@@ -96,31 +147,59 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .recap-row:last-child{border-bottom:none;}
 .recap-l{color:var(--muted);}
 .recap-v{font-weight:700;color:#E8F4FD;}
+
+/* HISTORIQUE */
+.hist-filter{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;}
+.hist-tab{background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.hist-tab.active{background:var(--accent-dark);color:white;}
 .hist-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
 .hist-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);flex-shrink:0;}
+.hist-dot.pending{background:#FFA500;animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
 .hist-body{flex:1;min-width:0;}
 .hist-art{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#E8F4FD;}
 .hist-meta{font-size:11px;color:var(--muted);margin-top:2px;}
 .hist-qty{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--accent);flex-shrink:0;}
+.hist-status{font-size:10px;color:#FFA500;margin-top:2px;}
+
 .warn-box{background:rgba(230,81,0,0.1);border:1px solid rgba(230,81,0,0.3);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#FFCC80;}
+.alert-box{background:rgba(211,47,47,0.1);border:1px solid rgba(211,47,47,0.3);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#EF9A9A;}
+
 .toast{position:fixed;top:70px;left:16px;right:16px;background:var(--accent-dark);color:white;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:500;z-index:300;display:none;text-align:center;}
 .loading-ov{position:fixed;inset:0;background:rgba(7,14,26,0.9);z-index:200;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;}
 .loading-ov.on{display:flex;}
 .spinner{width:44px;height:44px;border:3px solid var(--surface2);border-top:3px solid var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .loading-txt{font-size:14px;color:var(--muted);}
+
+/* RAPPORT CHANTIER */
+.rapport-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin-bottom:10px;}
+.rapport-chantier{font-weight:700;font-size:15px;margin-bottom:8px;color:#E8F4FD;}
+.rapport-row{display:flex;justify-content:space-between;font-size:12px;padding:4px 0;border-bottom:1px solid var(--border);}
+.rapport-row:last-child{border-bottom:none;}
+.rapport-total{display:flex;justify-content:space-between;font-weight:700;font-size:13px;margin-top:8px;padding-top:8px;border-top:2px solid var(--border);color:var(--accent);}
 </style>
 </head>
 <body>
+
+<div class="offline-banner" id="offlineBanner">📵 Hors-ligne — Les sorties seront synchronisées au retour du réseau</div>
+<div class="sync-banner" id="syncBanner">🔄 Synchronisation en cours...</div>
+
 <div class="header">
   <div class="header-top">
     <div class="logo">ECO <span>SORTIES</span></div>
-    <div class="user-badge">⚙️ Anatole</div>
+    <div class="header-right">
+      <div class="notif-btn" id="notifBtn" onclick="demanderNotifications()" title="Activer les notifications">🔔<div class="notif-badge" id="notifBadge">!</div></div>
+      <div class="user-badge">⚙️ Anatole</div>
+    </div>
   </div>
   <div class="header-sub"><span class="sync-dot" id="syncDot"></span><span id="headerSub">Chargement...</span></div>
+  <div class="pending-indicator" id="pendingIndicator">⏳ <span id="pendingCount">0</span> sortie(s) en attente de sync</div>
 </div>
+
 <div class="toast" id="toast"></div>
 <div class="loading-ov" id="loadOv"><div class="spinner"></div><div class="loading-txt" id="loadTxt">Enregistrement...</div></div>
+
 <!-- HOME -->
 <div class="screen active" id="s-home">
   <div class="home-hero">
@@ -128,19 +207,28 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     <div class="home-name">Anatole</div>
     <div class="home-sub">Scanner un article pour l'utiliser sur chantier</div>
   </div>
+  <div class="notif-box" id="notifBox">
+    <p>🔔 Activez les notifications pour recevoir les alertes de stock</p>
+    <button class="notif-btn-small" onclick="demanderNotifications()">Activer</button>
+  </div>
   <button class="big-btn btn-scan" onclick="goScan()">
     <span class="big-btn-icon">📷</span>
     <div class="big-btn-text"><h3>Scanner le code-barres</h3><p>Pointer vers l'emballage EAN13</p></div>
   </button>
+  <button class="big-btn btn-voice" onclick="goVoice()">
+    <span class="big-btn-icon">🎤</span>
+    <div class="big-btn-text"><h3>Recherche vocale</h3><p>Dicter le nom de l'article</p></div>
+  </button>
   <button class="big-btn btn-manual" onclick="goScreen('s-scan')">
     <span class="big-btn-icon">⌨️</span>
-    <div class="big-btn-text"><h3>Saisir manuellement</h3><p>Taper le code EAN13 ou code article</p></div>
+    <div class="big-btn-text"><h3>Saisir manuellement</h3><p>Taper le code EAN13 ou article</p></div>
   </button>
   <button class="big-btn btn-hist" onclick="goScreen('s-history')">
     <span class="big-btn-icon">🕐</span>
-    <div class="big-btn-text"><h3>Mes sorties</h3><p id="hist-count">Aucune sortie</p></div>
+    <div class="big-btn-text"><h3>Mes sorties & Rapport</h3><p id="hist-count">Aucune sortie</p></div>
   </button>
 </div>
+
 <!-- SCAN -->
 <div class="screen" id="s-scan">
   <button class="back-btn" onclick="stopCam();goScreen('s-home')">← Retour</button>
@@ -164,9 +252,35 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
     </div>
   </div>
 </div>
+
+<!-- VOICE -->
+<div class="screen" id="s-voice">
+  <button class="back-btn" onclick="stopVoice();goScreen('s-home')">← Retour</button>
+  <div class="voice-screen">
+    <div class="voice-icon" id="voiceIcon">🎤</div>
+    <div class="voice-status" id="voiceStatus">Appuyez pour parler</div>
+    <div class="voice-transcript" id="voiceTranscript">Dites le nom de l'article...</div>
+    <button class="big-btn btn-voice" id="voiceTrigger" onclick="toggleVoice()" style="justify-content:center;">
+      <span class="big-btn-icon">🎤</span>
+      <div class="big-btn-text"><h3 id="voiceBtnText">Commencer la dictée</h3></div>
+    </button>
+    <div class="voice-results" id="voiceResults"></div>
+  </div>
+</div>
+
 <!-- SAISIE -->
 <div class="screen" id="s-saisie">
   <button class="back-btn" onclick="stopCam();goScreen('s-scan');startCam()">← Scanner un autre</button>
+
+  <!-- Photo article -->
+  <div class="photo-wrap">
+    <img class="article-photo" id="artPhoto" src="" alt="Photo article">
+    <div class="photo-placeholder" id="photoPlaceholder" onclick="prendrePhoto()">
+      📸 Appuyez pour prendre une photo de l'article
+    </div>
+    <input type="file" id="photoInput" accept="image/*" capture="environment" style="display:none" onchange="afficherPhoto(event)">
+  </div>
+
   <div class="article-card">
     <div class="article-badge" id="art-badge"></div>
     <div class="article-ean" id="art-ean"></div>
@@ -177,23 +291,30 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="stock-chip chip-orange"><div class="stock-num" id="art-mini">—</div><div class="stock-lbl">Stock mini</div></div>
     </div>
   </div>
-  <div id="stock-warning" style="display:none;" class="warn-box">⚠️ Stock bas ou rupture — vérifiez avec le responsable.</div>
+
+  <div id="stock-warning" style="display:none;" class="warn-box">⚠️ Stock bas — vérifiez avec le responsable.</div>
+  <div id="stock-alert" style="display:none;" class="alert-box">🔴 RUPTURE DE STOCK — Ne pas sortir sans autorisation !</div>
+  <div id="sortie-alert" style="display:none;" class="alert-box">⚠️ Vous avez déjà sorti cet article plusieurs fois aujourd'hui !</div>
+
   <div class="sortie-title">➖ Quantité à sortir</div>
   <div class="qty-row">
     <button class="qty-btn" onclick="chgQty(-1)">−</button>
     <input class="qty-input" type="number" id="qty" value="1" min="1" oninput="updBtn()">
     <button class="qty-btn" onclick="chgQty(1)">+</button>
   </div>
+
   <span class="form-label">Chantier / Client</span>
+  <div class="chantier-tabs" id="chantier-tabs"></div>
   <input class="chantier-input" type="text" id="chantier" placeholder="Ex: Chantier DUPRAT, MARTIN..." oninput="updBtn()">
-  <div class="chips-row" id="chips-row"></div>
+
   <button class="submit-btn s-dis" id="sub-btn" onclick="enregistrer()">Entrez le chantier</button>
 </div>
+
 <!-- SUCCES -->
 <div class="screen" id="s-success">
   <div class="success-wrap">
     <div class="success-icon">⚙️</div>
-    <div class="success-title">Sortie enregistrée !</div>
+    <div class="success-title" id="suc-title">Sortie enregistrée !</div>
     <div class="success-sub" id="suc-sub"></div>
     <div class="recap-card" id="suc-recap"></div>
     <button class="big-btn btn-scan" style="margin-bottom:12px;" onclick="goScan()">
@@ -201,36 +322,103 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <div class="big-btn-text"><h3>Scanner un autre article</h3><p>Continuer les sorties</p></div>
     </button>
     <button class="big-btn btn-hist" onclick="goScreen('s-home')">
-      <span class="big-btn-icon">🏠</span>
-      <div class="big-btn-text"><h3>Accueil</h3></div>
+      <span class="big-btn-icon">🏠</span><div class="big-btn-text"><h3>Accueil</h3></div>
     </button>
   </div>
 </div>
-<!-- HISTORIQUE -->
+
+<!-- HISTORIQUE + RAPPORT -->
 <div class="screen" id="s-history">
   <button class="back-btn" onclick="goScreen('s-home')">← Retour</button>
-  <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">Mes sorties</div>
-  <div style="font-size:12px;color:var(--muted);margin-bottom:16px;">⚙️ Anatole</div>
+  <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">⚙️ Anatole</div>
+  <div class="hist-filter">
+    <div class="hist-tab active" onclick="filtreHist('sorties',this)">Mes sorties</div>
+    <div class="hist-tab" onclick="filtreHist('rapport',this)">Rapport chantiers</div>
+    <div class="hist-tab" onclick="filtreHist('pending',this)">En attente <span id="pending-tab-count"></span></div>
+  </div>
   <div id="hist-list"></div>
+  <div id="rapport-list" style="display:none;"></div>
+  <div id="pending-list" style="display:none;"></div>
 </div>
+
 <script>
 var SHEET_ID='1GJjgM-5myXMoWSLmB6i6SggyIcXozBTJEaraFBR46rw';
 var APPS_SCRIPT_URL='https://script.google.com/macros/s/AKfycbyoad1mx7Xxo3zoLwaTBVChLlbzrVKjOU-RZehyKSDTlhUoER1vQR4XiQ9O8uZBOc3e/exec';
 var PERSONNE='Anatole';
+var SEUIL_ALERTE=5;
 var HIST_KEY='eco_hist_anatole';
 var CHAN_KEY='eco_chan_anatole';
+var PENDING_KEY='eco_pending_anatole';
+var PHOTOS_KEY='eco_photos_anatole';
+
 var inventaire=[],curArt=null;
 var historique=JSON.parse(localStorage.getItem(HIST_KEY)||'[]');
 var chantiers=JSON.parse(localStorage.getItem(CHAN_KEY)||'[]');
+var pending=JSON.parse(localStorage.getItem(PENDING_KEY)||'[]');
+var photos=JSON.parse(localStorage.getItem(PHOTOS_KEY)||'{}');
 var stream=null,scanTimer=null,scanning=false;
+var recognition=null,recognizing=false;
+var isOnline=navigator.onLine;
+
+// ============================================================
+// ONLINE / OFFLINE
+// ============================================================
+window.addEventListener('online', function(){
+  isOnline=true;
+  document.getElementById('offlineBanner').classList.remove('show');
+  setSync('#43A047');
+  syncPending();
+});
+window.addEventListener('offline', function(){
+  isOnline=false;
+  document.getElementById('offlineBanner').classList.add('show');
+  setSync('#E65100');
+});
+if(!isOnline) document.getElementById('offlineBanner').classList.add('show');
+
+// ============================================================
+// NOTIFICATIONS PUSH
+// ============================================================
+function demanderNotifications(){
+  if(!('Notification' in window)){showToast('⚠️ Notifications non supportées');return;}
+  Notification.requestPermission().then(function(perm){
+    if(perm==='granted'){
+      document.getElementById('notifBox').style.display='none';
+      document.getElementById('notifBtn').textContent='🔔';
+      showToast('✅ Notifications activées !');
+      new Notification('ECO OUEST — Anatole',{body:'Notifications activées ! Vous recevrez les alertes de stock.',icon:'https://decoouestsolabaie-ops.github.io/eco-ouest/favicon.ico'});
+    } else {
+      showToast('❌ Notifications refusées');
+    }
+  });
+}
+
+function envoyerNotif(titre, message, urgent){
+  if(Notification.permission!=='granted')return;
+  var options={body:message,icon:'https://decoouestsolabaie-ops.github.io/eco-ouest/favicon.ico',badge:'https://decoouestsolabaie-ops.github.io/eco-ouest/favicon.ico',vibrate:urgent?[200,100,200,100,200]:[100]};
+  new Notification(titre,options);
+}
+
+// Vérifier si notifications déjà accordées
+if(Notification.permission==='granted'){
+  document.getElementById('notifBox').style.display='none';
+}
+
+// ============================================================
+// CHARGEMENT INVENTAIRE
+// ============================================================
 function charger(){
   var url='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet=INVENTAIRE&t='+Date.now();
   fetch(url).then(function(r){return r.text();}).then(function(csv){
     inventaire=parseCSV(csv);
     setSync('#43A047');
-    document.getElementById('headerSub').textContent=inventaire.length+' articles disponibles';
+    document.getElementById('headerSub').textContent=inventaire.length+' articles — Stock temps réel';
     updHistCount();
-  }).catch(function(){setSync('#C62828');document.getElementById('headerSub').textContent='Mode hors-ligne';});
+    syncPending();
+  }).catch(function(){
+    setSync('#E65100');
+    document.getElementById('headerSub').textContent='Mode hors-ligne';
+  });
 }
 function setSync(c){var d=document.getElementById('syncDot');d.style.background=c;d.style.boxShadow='0 0 6px '+c;}
 function parseCSV(csv){
@@ -246,6 +434,10 @@ function parseCSV(csv){
 }
 function clean(s){return(s||'').replace(/"/g,'').trim();}
 function splitCSV(line){var res=[],cur='',inQ=false;for(var i=0;i<line.length;i++){var c=line[i];if(c==='"'){inQ=!inQ;}else if(c===','&&!inQ){res.push(cur);cur='';}else{cur+=c;}}res.push(cur);return res;}
+
+// ============================================================
+// CAMERA
+// ============================================================
 function startCam(){
   if(stream)return;scanning=true;
   document.getElementById('scan-status').textContent='📷 Activation caméra...';
@@ -285,6 +477,112 @@ function stopCam(){
   if(stream){stream.getTracks().forEach(function(t){t.stop();});stream=null;}
   document.getElementById('video').srcObject=null;
 }
+
+// ============================================================
+// RECHERCHE VOCALE
+// ============================================================
+function goVoice(){
+  goScreen('s-voice');
+  document.getElementById('voiceResults').innerHTML='';
+  document.getElementById('voiceTranscript').textContent='Dites le nom de l\'article...';
+  document.getElementById('voiceStatus').textContent='Appuyez pour parler';
+  document.getElementById('voiceIcon').textContent='🎤';
+  document.getElementById('voiceBtnText').textContent='Commencer la dictée';
+  recognizing=false;
+}
+
+function toggleVoice(){
+  if(!('webkitSpeechRecognition' in window)&&!('SpeechRecognition' in window)){
+    showToast('⚠️ Reconnaissance vocale non supportée sur ce navigateur');
+    return;
+  }
+  if(recognizing){stopVoice();return;}
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  recognition=new SR();
+  recognition.lang='fr-FR';
+  recognition.continuous=false;
+  recognition.interimResults=true;
+  recognition.onstart=function(){
+    recognizing=true;
+    document.getElementById('voiceIcon').textContent='🔴';
+    document.getElementById('voiceStatus').textContent='Écoute en cours...';
+    document.getElementById('voiceBtnText').textContent='Arrêter';
+    document.getElementById('voiceTranscript').textContent='...';
+  };
+  recognition.onresult=function(e){
+    var transcript='';
+    for(var i=e.resultIndex;i<e.results.length;i++){transcript+=e.results[i][0].transcript;}
+    document.getElementById('voiceTranscript').textContent=transcript;
+    if(e.results[e.resultIndex].isFinal){rechercherVoix(transcript);}
+  };
+  recognition.onerror=function(){
+    recognizing=false;
+    document.getElementById('voiceIcon').textContent='🎤';
+    document.getElementById('voiceStatus').textContent='Erreur — Réessayez';
+    document.getElementById('voiceBtnText').textContent='Commencer la dictée';
+  };
+  recognition.onend=function(){
+    recognizing=false;
+    document.getElementById('voiceIcon').textContent='🎤';
+    document.getElementById('voiceStatus').textContent='Appuyez pour parler';
+    document.getElementById('voiceBtnText').textContent='Commencer la dictée';
+  };
+  recognition.start();
+}
+
+function stopVoice(){
+  if(recognition&&recognizing){recognition.stop();}
+  recognizing=false;
+}
+
+function rechercherVoix(texte){
+  var mots=texte.toLowerCase().split(' ');
+  var resultats=inventaire.filter(function(art){
+    return mots.some(function(mot){return art.desig.toLowerCase().indexOf(mot)!==-1&&mot.length>2;});
+  }).slice(0,5);
+
+  var el=document.getElementById('voiceResults');
+  if(!resultats.length){
+    el.innerHTML='<div style="text-align:center;padding:20px;color:var(--muted);">Aucun article trouvé pour "'+texte+'"</div>';
+    return;
+  }
+  el.innerHTML='<div style="font-size:12px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.8px;">Résultats pour "'+texte+'"</div>'
+    +resultats.map(function(art){
+      return'<div class="voice-result-item" onclick="selVoiceArt(\''+art.code+'\')">'
+        +'<div class="voice-result-name">'+art.desig+'<br><span style="font-size:11px;color:var(--muted);">'+art.code+' · '+art.fourn+'</span></div>'
+        +'<div class="voice-result-stock">'+art.stock+'</div>'
+        +'</div>';
+    }).join('');
+}
+
+function selVoiceArt(code){
+  stopVoice();
+  var art=null;
+  for(var i=0;i<inventaire.length;i++){if(inventaire[i].code===code){art=inventaire[i];break;}}
+  if(art){curArt=art;afficher(art);goScreen('s-saisie');}
+}
+
+// ============================================================
+// PHOTO ARTICLE
+// ============================================================
+function prendrePhoto(){document.getElementById('photoInput').click();}
+function afficherPhoto(e){
+  var file=e.target.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var dataUrl=ev.target.result;
+    document.getElementById('artPhoto').src=dataUrl;
+    document.getElementById('artPhoto').classList.add('show');
+    document.getElementById('photoPlaceholder').style.display='none';
+    // Sauvegarder photo localement
+    if(curArt){photos[curArt.code]=dataUrl;localStorage.setItem(PHOTOS_KEY,JSON.stringify(photos));}
+  };
+  reader.readAsDataURL(file);
+}
+
+// ============================================================
+// RECHERCHE ARTICLE
+// ============================================================
 function onCode(raw){
   var code=(raw||'').trim();if(!code){showToast('⚠️ Code vide');return;}
   var num=code.replace(/\D/g,'');
@@ -294,6 +592,7 @@ function onCode(raw){
   if(!art){art={code:code,fourn:'',desig:'EAN: '+code+' — Inconnu',mini:0,stock:0,ean:code};showToast('⚠️ Article non trouvé');}
   curArt=art;afficher(art);stopCam();goScreen('s-saisie');
 }
+
 function afficher(art){
   var found=art.desig.indexOf('EAN:')===-1;
   document.getElementById('art-badge').textContent=found?'✅ Article trouvé':'⚠️ Inconnu';
@@ -303,14 +602,51 @@ function afficher(art){
   document.getElementById('art-fourn').textContent=art.fourn||'';
   document.getElementById('art-stock').textContent=art.stock;
   document.getElementById('art-mini').textContent=art.mini||'—';
+
   var chip=document.getElementById('art-stock-chip');
-  var warn=document.getElementById('stock-warning');
-  if(art.stock<=0){chip.className='stock-chip chip-red';warn.style.display='block';}
-  else if(art.mini>0&&art.stock<=art.mini){chip.className='stock-chip chip-orange';warn.style.display='block';}
-  else{chip.className='stock-chip chip-green';warn.style.display='none';}
-  document.getElementById('chips-row').innerHTML=chantiers.slice(0,5).map(function(c){return'<div class="chip" onclick="document.getElementById(\'chantier\').value=\''+c+'\';updBtn()">'+c+'</div>';}).join('');
-  document.getElementById('qty').value=1;document.getElementById('chantier').value='';updBtn();
+  document.getElementById('stock-warning').style.display='none';
+  document.getElementById('stock-alert').style.display='none';
+  if(art.stock<=0){chip.className='stock-chip chip-red';document.getElementById('stock-alert').style.display='block';}
+  else if(art.mini>0&&art.stock<=art.mini){chip.className='stock-chip chip-orange';document.getElementById('stock-warning').style.display='block';}
+  else{chip.className='stock-chip chip-green';}
+
+  // Vérifier sorties excessives aujourd'hui
+  var aujourdhui=new Date().toLocaleDateString('fr-FR');
+  var sortiesAujourdhui=historique.filter(function(h){return h.code===art.code&&h.date===aujourdhui;});
+  document.getElementById('sortie-alert').style.display=sortiesAujourdhui.length>=SEUIL_ALERTE?'block':'none';
+
+  // Photo si disponible
+  var photo=photos[art.code];
+  if(photo){
+    document.getElementById('artPhoto').src=photo;
+    document.getElementById('artPhoto').classList.add('show');
+    document.getElementById('photoPlaceholder').style.display='none';
+  } else {
+    document.getElementById('artPhoto').classList.remove('show');
+    document.getElementById('photoPlaceholder').style.display='block';
+  }
+
+  // Chantiers récents
+  var tabs=document.getElementById('chantier-tabs');
+  tabs.innerHTML=chantiers.slice(0,5).map(function(c){
+    return'<div class="chantier-tab" onclick="selChantier(\''+c+'\')">'+c+'</div>';
+  }).join('');
+
+  document.getElementById('qty').value=1;
+  document.getElementById('chantier').value='';
+  updBtn();
 }
+
+function selChantier(c){
+  document.getElementById('chantier').value=c;
+  document.querySelectorAll('.chantier-tab').forEach(function(t){t.classList.remove('active');});
+  event.target.classList.add('active');
+  updBtn();
+}
+
+// ============================================================
+// QUANTITE + VALIDATION
+// ============================================================
 function chgQty(d){var i=document.getElementById('qty');i.value=Math.max(1,(parseInt(i.value)||1)+d);updBtn();}
 function updBtn(){
   var btn=document.getElementById('sub-btn');
@@ -321,69 +657,200 @@ function updBtn(){
   btn.className='submit-btn s-ok';
   btn.innerHTML='➖ Sortir '+qty+' unité'+(qty>1?'s':'')+' — '+chan;
 }
+
+// ============================================================
+// ENREGISTREMENT + OFFLINE
+// ============================================================
 function enregistrer(){
   if(!curArt)return;
   var qty=parseInt(document.getElementById('qty').value)||0;
   var chan=document.getElementById('chantier').value.trim();
   if(qty<=0||!chan)return;
-  showLoad('Enregistrement...');
+
   var now=new Date();
   var dateStr=now.toLocaleDateString('fr-FR');
+  var heureStr=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   var rowData=[dateStr,curArt.code,curArt.desig,'',qty,chan,'Sortie chantier',PERSONNE];
-  var params = {
-    action: 'addMouvement',
-    date: rowData[0], code: rowData[1], desig: rowData[2],
-    entree: rowData[3], sortie: rowData[4], chantier: rowData[5],
-    type: rowData[6], personne: rowData[7]
-  };
-  envoyerDonnees(params, function(){ ok(qty,chan,now); });
-  historique.unshift({date:dateStr,heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),code:curArt.code,desig:curArt.desig,qty:qty,chantier:chan});
-  historique=historique.slice(0,50);
+
+  // Sauvegarder dans historique local
+  var item={date:dateStr,heure:heureStr,code:curArt.code,desig:curArt.desig,qty:qty,chantier:chan,synced:false};
+  historique.unshift(item);
+  historique=historique.slice(0,100);
   localStorage.setItem(HIST_KEY,JSON.stringify(historique));
+
   if(chan){chantiers=[chan].concat(chantiers.filter(function(c){return c!==chan;})).slice(0,8);localStorage.setItem(CHAN_KEY,JSON.stringify(chantiers));}
-  curArt.stock=Math.max(0,(curArt.stock||0)-qty);
+
+  // Vérifications alertes
+  var stockApres=Math.max(0,(curArt.stock||0)-qty);
+  curArt.stock=stockApres;
+
+  // Notification push si rupture
+  if(stockApres<=0){
+    envoyerNotif('🔴 RUPTURE DE STOCK',curArt.desig+' — Stock épuisé après sortie de '+qty+' unité(s)',true);
+  }
+
+  // Alerte sorties excessives
+  var sortiesAujourdhui=historique.filter(function(h){return h.code===curArt.code&&h.date===dateStr;});
+  if(sortiesAujourdhui.length>=SEUIL_ALERTE){
+    envoyerNotif('⚠️ Sorties excessives',PERSONNE+' a sorti '+sortiesAujourdhui.length+'x "'+curArt.desig+'" aujourd\'hui',true);
+  }
+
+  if(isOnline){
+    envoyerDonnees({action:'addMouvement',date:rowData[0],code:rowData[1],desig:rowData[2],entree:rowData[3],sortie:rowData[4],chantier:rowData[5],type:rowData[6],personne:rowData[7]},function(){
+      item.synced=true;
+      localStorage.setItem(HIST_KEY,JSON.stringify(historique));
+      updPending();
+    });
+  } else {
+    // Stocker en attente
+    pending.push({rowData:rowData,timestamp:now.getTime()});
+    localStorage.setItem(PENDING_KEY,JSON.stringify(pending));
+    updPending();
+    showToast('📵 Hors-ligne — Sera synchronisé automatiquement');
+  }
+
+  updHistCount();
+  showSucces(qty,chan,now,stockApres);
 }
-function ok(qty,chan,now){
-  hideLoad();
-  document.getElementById('suc-sub').textContent='Sortie enregistrée — '+PERSONNE+' — '+now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+
+function showSucces(qty,chan,now,stockApres){
+  document.getElementById('suc-title').textContent=isOnline?'Sortie enregistrée !':'Sortie sauvegardée (hors-ligne)';
+  document.getElementById('suc-sub').textContent=isOnline?'Enregistré dans Google Sheets':'Sera synchronisé au retour du réseau';
   document.getElementById('suc-recap').innerHTML=
-    rcap('Article',curArt.desig)+rcap('Quantité',qty+' unité'+(qty>1?'s':''))+
-    rcap('Chantier',chan)+rcap('Stock restant',curArt.stock+' restant(s)')+
-    rcap('Enregistré par',PERSONNE);
-  updHistCount();goScreen('s-success');
+    rcap('Article',curArt.desig)+
+    rcap('Quantité',qty+' unité'+(qty>1?'s':''))+
+    rcap('Chantier',chan)+
+    rcap('Stock restant',stockApres+' restant(s)')+
+    rcap('Heure',now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}))+
+    rcap('Statut',isOnline?'✅ Synchronisé':'⏳ En attente sync');
+  goScreen('s-success');
   document.getElementById('qty').value=1;document.getElementById('chantier').value='';
 }
-function rcap(l,v){return'<div class="recap-row"><span class="recap-l">'+l+'</span><span class="recap-v">'+v+'</span></div>';}
+
+// ============================================================
+// SYNC PENDING (hors-ligne → en ligne)
+// ============================================================
+function syncPending(){
+  if(!isOnline||!pending.length)return;
+  document.getElementById('syncBanner').classList.add('show');
+  var toSync=pending.slice();
+  var synced=0;
+  toSync.forEach(function(item){
+    var r=item.rowData;
+    envoyerDonnees({action:'addMouvement',date:r[0],code:r[1],desig:r[2],entree:r[3],sortie:r[4],chantier:r[5],type:r[6],personne:r[7]},function(){
+      synced++;
+      if(synced===toSync.length){
+        pending=[];
+        localStorage.setItem(PENDING_KEY,JSON.stringify(pending));
+        document.getElementById('syncBanner').classList.remove('show');
+        updPending();
+        showToast('✅ '+synced+' sortie(s) synchronisée(s) !');
+        // Marquer comme synced dans historique
+        historique.forEach(function(h){h.synced=true;});
+        localStorage.setItem(HIST_KEY,JSON.stringify(historique));
+      }
+    });
+  });
+}
+
+function updPending(){
+  var count=pending.length;
+  var pi=document.getElementById('pendingIndicator');
+  var ptc=document.getElementById('pending-tab-count');
+  if(count>0){
+    pi.classList.add('show');
+    document.getElementById('pendingCount').textContent=count;
+    if(ptc)ptc.textContent='('+count+')';
+  } else {
+    pi.classList.remove('show');
+    if(ptc)ptc.textContent='';
+  }
+}
+
+// ============================================================
+// ENVOI DONNÉES
+// ============================================================
+function envoyerDonnees(params,callback){
+  var url=APPS_SCRIPT_URL+'?'+Object.keys(params).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(params[k]);}).join('&');
+  fetch(url,{method:'GET',mode:'no-cors'}).then(function(){if(callback)callback();}).catch(function(){if(callback)callback();});
+}
+
+// ============================================================
+// RAPPORT PAR CHANTIER
+// ============================================================
+function genererRapport(){
+  var rapport={};
+  historique.forEach(function(h){
+    if(!rapport[h.chantier])rapport[h.chantier]={sorties:[],total:0};
+    rapport[h.chantier].sorties.push(h);
+    rapport[h.chantier].total+=h.qty;
+  });
+  var el=document.getElementById('rapport-list');
+  var chantiersList=Object.keys(rapport);
+  if(!chantiersList.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);">Aucune donnée</div>';return;}
+  el.innerHTML=chantiersList.map(function(ch){
+    var r=rapport[ch];
+    var lignes=r.sorties.slice(0,5).map(function(s){
+      return'<div class="rapport-row"><span>'+s.desig.substring(0,30)+'</span><span>−'+s.qty+'</span></div>';
+    }).join('');
+    return'<div class="rapport-card"><div class="rapport-chantier">📍 '+ch+'</div>'+lignes
+      +'<div class="rapport-total"><span>Total sorties</span><span>'+r.total+' articles</span></div></div>';
+  }).join('');
+}
+
+// ============================================================
+// HISTORIQUE
+// ============================================================
+var currentFiltre='sorties';
+function filtreHist(type,el){
+  currentFiltre=type;
+  document.querySelectorAll('.hist-tab').forEach(function(t){t.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('hist-list').style.display=type==='sorties'?'block':'none';
+  document.getElementById('rapport-list').style.display=type==='rapport'?'block':'none';
+  document.getElementById('pending-list').style.display=type==='pending'?'block':'none';
+  if(type==='sorties')renderHist();
+  if(type==='rapport')genererRapport();
+  if(type==='pending')renderPending();
+}
+
 function renderHist(){
   var el=document.getElementById('hist-list');
   if(!historique.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);">Aucune sortie</div>';return;}
-  el.innerHTML=historique.map(function(h){return'<div class="hist-item"><div class="hist-dot"></div><div class="hist-body"><div class="hist-art">'+h.desig+'</div><div class="hist-meta">'+h.date+' '+h.heure+' · '+h.chantier+'</div></div><div class="hist-qty">-'+h.qty+'</div></div>';}).join('');
+  el.innerHTML=historique.map(function(h){
+    var dot=h.synced===false?'hist-dot pending':'hist-dot';
+    var status=h.synced===false?'<div class="hist-status">⏳ En attente de synchronisation</div>':'';
+    return'<div class="hist-item"><div class="'+dot+'"></div><div class="hist-body"><div class="hist-art">'+h.desig+'</div><div class="hist-meta">'+h.date+' '+h.heure+' · '+h.chantier+'</div>'+status+'</div><div class="hist-qty">−'+h.qty+'</div></div>';
+  }).join('');
 }
-function updHistCount(){document.getElementById('hist-count').textContent=historique.length>0?historique.length+' sortie(s)':'Aucune sortie';}
-function goScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');if(id==='s-history')renderHist();window.scrollTo(0,0);}
+
+function renderPending(){
+  var el=document.getElementById('pending-list');
+  if(!pending.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted);">✅ Tout est synchronisé</div>';return;}
+  el.innerHTML=pending.map(function(p){
+    var r=p.rowData;
+    return'<div class="hist-item"><div class="hist-dot pending"></div><div class="hist-body"><div class="hist-art">'+r[2]+'</div><div class="hist-meta">'+r[0]+' · '+r[5]+'</div><div class="hist-status">⏳ Non synchronisé</div></div><div class="hist-qty">−'+r[4]+'</div></div>';
+  }).join('');
+}
+
+function updHistCount(){
+  document.getElementById('hist-count').textContent=historique.length>0?historique.length+' sortie(s) — '+Object.keys(historique.reduce(function(a,h){a[h.chantier]=1;return a;},{})).length+' chantier(s)':'Aucune sortie';
+}
+
+function rcap(l,v){return'<div class="recap-row"><span class="recap-l">'+l+'</span><span class="recap-v">'+v+'</span></div>';}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function goScreen(id){document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});document.getElementById(id).classList.add('active');if(id==='s-history'){renderHist();updPending();}window.scrollTo(0,0);}
 function goScan(){goScreen('s-scan');startCam();}
-function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},3500);}
+
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(function(){t.style.display='none';},4000);}
 function showLoad(t){document.getElementById('loadTxt').textContent=t;document.getElementById('loadOv').classList.add('on');}
 function hideLoad(){document.getElementById('loadOv').classList.remove('on');}
 
-function envoyerDonnees(params, callback) {
-  var url = APPS_SCRIPT_URL + '?' + Object.keys(params).map(function(k){
-    return encodeURIComponent(k) + '=' + encodeURIComponent(params[k]);
-  }).join('&');
-  
-  var img = new Image();
-  img.onload = img.onerror = function() {
-    if (callback) callback();
-  };
-  img.src = url;
-  
-  // Fallback avec fetch no-cors
-  fetch(url, { method: 'GET', mode: 'no-cors' })
-    .then(function(){ if(callback) callback(); })
-    .catch(function(){ if(callback) callback(); });
-}
-
-charger();updHistCount();
+charger();updHistCount();updPending();
+if(!isOnline)setSync('#E65100');
 </script>
 </body>
 </html>
