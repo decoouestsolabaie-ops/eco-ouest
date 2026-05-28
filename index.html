@@ -580,24 +580,44 @@ function enregistrer(){
   var qty=parseInt(document.getElementById('qty').value)||0;
   var chan=document.getElementById('chantier').value.trim()||'Non précisé';
   if(qty<=0)return;
-  showLoad('Enregistrement...');
+
   var now=new Date();
   var dateStr=now.toLocaleDateString('fr-FR');
+  var heureStr=now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
   var typeStr=curType==='entree'?'Réception':'Sortie chantier';
-  var rowData=[dateStr,curArt.code,curArt.desig,curType==='entree'?qty:'',curType==='sortie'?qty:'',chan,typeStr,''];
-  fetch(APPS_SCRIPT_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'addMouvement',data:rowData})})
-    .then(function(){mvOk(qty,chan,typeStr,now);}).catch(function(){mvOk(qty,chan,typeStr,now);});
-  addHist({date:dateStr,heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),code:curArt.code,desig:curArt.desig,type:curType,qty:qty,chantier:chan,dot:'mouvement'});
-  if(chan!=='Non précisé'){chantiers=[chan].concat(chantiers.filter(function(c){return c!==chan;})).slice(0,8);localStorage.setItem('eco_admin_chan',JSON.stringify(chantiers));}
-  if(curType==='entree')curArt.stock=(curArt.stock||0)+qty;
+
+  // Mettre à jour stock local IMMÉDIATEMENT
+  if(curType==='entree') curArt.stock=(curArt.stock||0)+qty;
   else curArt.stock=Math.max(0,(curArt.stock||0)-qty);
+
+  // Sauvegarder historique local
+  addHist({date:dateStr,heure:heureStr,code:curArt.code,desig:curArt.desig,type:curType,qty:qty,chantier:chan,dot:'mouvement'});
+  if(chan!=='Non précisé'){chantiers=[chan].concat(chantiers.filter(function(c){return c!==chan;})).slice(0,8);localStorage.setItem('eco_admin_chan',JSON.stringify(chantiers));}
+
+  // Afficher succès IMMÉDIATEMENT sans attendre le serveur
+  mvOk(qty,chan,typeStr,now);
+
+  // Envoyer en arrière-plan
+  setTimeout(function(){
+    envoyerDonnees({
+      action:'addMouvement',
+      date:dateStr,
+      code:curArt.code,
+      desig:curArt.desig,
+      entree:curType==='entree'?qty:'',
+      sortie:curType==='sortie'?qty:'',
+      chantier:chan,
+      type:typeStr,
+      personne:'Admin',
+      heure:heureStr
+    }, null);
+  }, 200);
 }
 
 function mvOk(qty,chan,typeStr,now){
-  hideLoad();
   document.getElementById('suc-icon').textContent=curType==='entree'?'✅':'📦';
   document.getElementById('suc-title').textContent=curType==='entree'?'Entrée enregistrée !':'Sortie enregistrée !';
-  document.getElementById('suc-sub').textContent='Mouvement ajouté dans Google Sheets.';
+  document.getElementById('suc-sub').textContent='Enregistré — synchronisation en arrière-plan.';
   document.getElementById('suc-recap').innerHTML=rcap('Article',curArt.desig)+rcap('Type',typeStr)+rcap('Quantité',qty+' unité'+(qty>1?'s':''))+rcap('Chantier',chan)+rcap('Stock estimé',curArt.stock+' restant(s)');
   updHistCount();goScreen('s-success');
   curType=null;document.getElementById('qty').value=1;document.getElementById('chantier').value='';
@@ -619,24 +639,20 @@ function ajouterArticle(){
 
   if(!code||!desig){showToast('⚠️ Code article et désignation obligatoires');return;}
 
-  showLoad('Ajout dans l\'inventaire...');
-
-  var rowData=[code,fourn,desig,mini,stock,0,0,stock,'',prix,ean];
-  var artParams = {
-    action: 'addArticle',
-    code: code, fourn: fourn, desig: desig,
-    mini: mini, stock: stock, prix: prix,
-    ean: ean, categorie: cat
-  };
-  envoyerDonnees(artParams, function(){ artOk(code,desig,stock,ean); });
-
-  // Ajouter à inventaire local
+  // Ajouter à inventaire local IMMÉDIATEMENT
   inventaire.push({code:code,fourn:fourn,desig:desig,mini:mini,stock:stock,ean:ean});
   addHist({date:new Date().toLocaleDateString('fr-FR'),heure:new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}),code:code,desig:desig,type:'new',qty:stock,chantier:'Nouveau article',dot:'new'});
+
+  // Afficher succès IMMÉDIATEMENT
+  artOk(code,desig,stock,ean);
+
+  // Envoyer en arrière-plan
+  setTimeout(function(){
+    envoyerDonnees({action:'addArticle',code:code,fourn:fourn,desig:desig,mini:mini,stock:stock,prix:prix,ean:ean,categorie:cat}, null);
+  }, 200);
 }
 
 function artOk(code,desig,stock,ean){
-  hideLoad();
   document.getElementById('suc-icon').textContent='🆕';
   document.getElementById('suc-title').textContent='Article ajouté !';
   document.getElementById('suc-sub').textContent='L\'article a été ajouté à l\'inventaire Google Sheets.';
